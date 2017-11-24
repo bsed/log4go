@@ -18,7 +18,7 @@ const testLogFile = "_logtest.log"
 
 var now time.Time = time.Unix(0, 1234567890123456789).In(time.UTC)
 
-func newLogRecord(lvl level, src string, msg string) *LogRecord {
+func newLogRecord(lvl Level, src string, msg string) *LogRecord {
 	return &LogRecord{
 		Level:   lvl,
 		Source:  src,
@@ -56,8 +56,8 @@ var formatTests = []struct {
 		},
 		Formats: map[string]string{
 			// TODO(kevlar): How can I do this so it'll work outside of PST?
-			FORMAT_DEFAULT: "[2009/02/13 23:31:30 UTC] [EROR] (source) message\n",
-			FORMAT_SHORT:   "[23:31 02/13/09] [EROR] message\n",
+			FORMAT_DEFAULT: "[2009/02/13 23:31:30.123456789 UTC] [EROR] (source) message\n",
+			FORMAT_SHORT:   "[23:31 13/02/09] [EROR] message\n",
 			FORMAT_ABBREV:  "[EROR] message\n",
 		},
 	},
@@ -85,16 +85,16 @@ var logRecordWriteTests = []struct {
 		Test: "Normal message",
 		Record: &LogRecord{
 			Level:   CRITICAL,
-			Source:  "source",
+			Source:  "source code",
 			Message: "message",
 			Created: now,
 		},
-		Console: "[02/13/09 23:31:30] [CRIT] message\n",
+		Console: "[23:31:30.123456789 UTC 2009/02/13] [CRIT] (source code) message\n",
 	},
 }
 
 func TestConsoleLogWriter(t *testing.T) {
-	console := make(ConsoleLogWriter)
+	console := NewConsoleLogWriter()
 
 	r, w := io.Pipe()
 	go console.run(w)
@@ -121,7 +121,7 @@ func TestFileLogWriter(t *testing.T) {
 	}(LogBufferLength)
 	LogBufferLength = 0
 
-	w := NewFileLogWriter(testLogFile, false)
+	w := NewFileLogWriter(testLogFile, false, false)
 	if w == nil {
 		t.Fatalf("Invalid return: w should not be nil")
 	}
@@ -133,8 +133,11 @@ func TestFileLogWriter(t *testing.T) {
 
 	if contents, err := ioutil.ReadFile(testLogFile); err != nil {
 		t.Errorf("read(%q): %s", testLogFile, err)
-	} else if len(contents) != 50 {
-		t.Errorf("malformed filelog: %q (%d bytes)", string(contents), len(contents))
+	} else {
+		fmt.Println(string(contents))
+		if len(contents) != 60 {
+			t.Errorf("malformed filelog: %q (%d bytes)", string(contents), len(contents))
+		}
 	}
 }
 
@@ -144,7 +147,7 @@ func TestXMLLogWriter(t *testing.T) {
 	}(LogBufferLength)
 	LogBufferLength = 0
 
-	w := NewXMLLogWriter(testLogFile, false)
+	w := NewXMLLogWriter(testLogFile, false, false)
 	if w == nil {
 		t.Fatalf("Invalid return: w should not be nil")
 	}
@@ -156,8 +159,20 @@ func TestXMLLogWriter(t *testing.T) {
 
 	if contents, err := ioutil.ReadFile(testLogFile); err != nil {
 		t.Errorf("read(%q): %s", testLogFile, err)
-	} else if len(contents) != 185 {
-		t.Errorf("malformed xmllog: %q (%d bytes)", string(contents), len(contents))
+	} else {
+		fmt.Println(string(contents))
+		if runtime.GOOS == "windows" {
+			// on windows the line breaker is 2 bytes(\r\n)
+			if len(contents) != 205 {
+				t.Errorf("malformed xmllog: %q (%d bytes)", string(contents), len(contents))
+			}
+		} else {
+			// on mac or linux
+			if len(contents) != 204 {
+				t.Errorf("malformed xmllog: %q (%d bytes)", string(contents), len(contents))
+			}
+		}
+
 	}
 }
 
@@ -179,6 +194,7 @@ func TestLogger(t *testing.T) {
 	//func (l *Logger) AddFilter(name string, level int, writer LogWriter) {}
 	l := make(Logger)
 	l.AddFilter("stdout", DEBUG, NewConsoleLogWriter())
+	l.Info("Test log something")
 	if lw, exist := l["stdout"]; lw == nil || exist != true {
 		t.Fatalf("AddFilter produced invalid logger (DNE or nil)")
 	}
@@ -229,7 +245,7 @@ func TestLogOutput(t *testing.T) {
 	l := make(Logger)
 
 	// Delete and open the output log without a timestamp (for a constant md5sum)
-	l.AddFilter("file", FINEST, NewFileLogWriter(testLogFile, false).SetFormat("[%L] %M"))
+	l.AddFilter("file", FINEST, NewFileLogWriter(testLogFile, false, false).SetFormat("[%L] %M"))
 	defer os.Remove(testLogFile)
 
 	// Send some log messages
@@ -317,6 +333,8 @@ func TestXMLConfig(t *testing.T) {
 	fmt.Fprintln(fd, "    <type>console</type>")
 	fmt.Fprintln(fd, "    <!-- level is (:?FINEST|FINE|DEBUG|TRACE|INFO|WARNING|ERROR) -->")
 	fmt.Fprintln(fd, "    <level>DEBUG</level>")
+	fmt.Fprintln(fd, "    <exclude>github.com/example</exclude>")
+	fmt.Fprintln(fd, "    <exclude>github.com/sample</exclude>")
 	fmt.Fprintln(fd, "  </filter>")
 	fmt.Fprintln(fd, "  <filter enabled=\"true\">")
 	fmt.Fprintln(fd, "    <tag>file</tag>")
@@ -324,7 +342,7 @@ func TestXMLConfig(t *testing.T) {
 	fmt.Fprintln(fd, "    <level>FINEST</level>")
 	fmt.Fprintln(fd, "    <property name=\"filename\">test.log</property>")
 	fmt.Fprintln(fd, "    <!--")
-	fmt.Fprintln(fd, "       %T - Time (15:04:05 MST)")
+	fmt.Fprintln(fd, "       %T - Time (15:04:05.123456789 MST)")
 	fmt.Fprintln(fd, "       %t - Time (15:04)")
 	fmt.Fprintln(fd, "       %D - Date (2006/01/02)")
 	fmt.Fprintln(fd, "       %d - Date (01/02/06)")
@@ -383,7 +401,7 @@ func TestXMLConfig(t *testing.T) {
 	}
 
 	// Make sure they're the right type
-	if _, ok := log["stdout"].LogWriter.(ConsoleLogWriter); !ok {
+	if _, ok := log["stdout"].LogWriter.(*ConsoleLogWriter); !ok {
 		t.Fatalf("XMLConfig: Expected stdout to be ConsoleLogWriter, found %T", log["stdout"].LogWriter)
 	}
 	if _, ok := log["file"].LogWriter.(*FileLogWriter); !ok {
@@ -478,7 +496,7 @@ func BenchmarkConsoleUtilNotLog(b *testing.B) {
 func BenchmarkFileLog(b *testing.B) {
 	sl := make(Logger)
 	b.StopTimer()
-	sl.AddFilter("file", INFO, NewFileLogWriter("benchlog.log", false))
+	sl.AddFilter("file", INFO, NewFileLogWriter("benchlog.log", false, false))
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		sl.Log(WARNING, "here", "This is a log message")
@@ -490,7 +508,7 @@ func BenchmarkFileLog(b *testing.B) {
 func BenchmarkFileNotLogged(b *testing.B) {
 	sl := make(Logger)
 	b.StopTimer()
-	sl.AddFilter("file", INFO, NewFileLogWriter("benchlog.log", false))
+	sl.AddFilter("file", INFO, NewFileLogWriter("benchlog.log", false, false))
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		sl.Log(DEBUG, "here", "This is a log message")
@@ -502,7 +520,7 @@ func BenchmarkFileNotLogged(b *testing.B) {
 func BenchmarkFileUtilLog(b *testing.B) {
 	sl := make(Logger)
 	b.StopTimer()
-	sl.AddFilter("file", INFO, NewFileLogWriter("benchlog.log", false))
+	sl.AddFilter("file", INFO, NewFileLogWriter("benchlog.log", false, false))
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		sl.Info("%s is a log message", "This")
@@ -514,7 +532,7 @@ func BenchmarkFileUtilLog(b *testing.B) {
 func BenchmarkFileUtilNotLog(b *testing.B) {
 	sl := make(Logger)
 	b.StopTimer()
-	sl.AddFilter("file", INFO, NewFileLogWriter("benchlog.log", false))
+	sl.AddFilter("file", INFO, NewFileLogWriter("benchlog.log", false, false))
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		sl.Debug("%s is a log message", "This")
