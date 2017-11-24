@@ -15,3 +15,5 @@ import l4g "log4go.googlecode.com/hg"
 # example
 
 ## console log write
+
+![](https://github.com/bsed/images/raw/master/2017/11/console_log.png)
