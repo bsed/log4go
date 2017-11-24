@@ -3,12 +3,15 @@ package main
 import (
 	l4g "github.com/bsed/log4go"
 	"time"
+	//"os/signal"
+	//"syscall"
+	"os"
 	"os/signal"
 	"syscall"
-	"os"
 )
 
 const logname = "example.xml"
+var Log l4g.Logger
 
 func loadLog4goConfig() {
 	l4g.Debug("Loading configuration")
@@ -17,6 +20,10 @@ func loadLog4goConfig() {
 		return
 	}
 	l4g.LoadConfiguration(logname)
+}
+
+func Close(){
+	Log.Close()
 }
 
 func main() {
@@ -34,15 +41,42 @@ func main() {
 		}
 	}()
 
+	//Log=make(l4g.Logger)
+	//Log.LoadConfiguration("example.xml");
+
 	// And now we're ready!
-	l4g.Finest("This will only go to those of you really cool UDP kids!  If you change enabled=true.")
-	l4g.Debug("Oh no!  %d + %d = %d!", 2, 2, 2+2)
-	l4g.Info("About that time, eh chaps?")
-	l4g.Info("The time is now: %s", time.Now().Format("15:04:05 MST 2006/01/02"))
+	for {
+		l4g.Finest("This will only go to those of you really cool UDP kids!  If you change enabled=true.")
+		l4g.Debug("Oh no!  %d + %d = %d!", 2, 2, 2+2)
+		l4g.Info("About that time, eh chaps?")
+		l4g.Info("The time is now: %s", time.Now().Format("15:04:05 MST 2006/01/02"))
 
-	l4g.Error("The time is now: %s", time.Now().Format("15:04:05 MST 2006/01/02"))
+		l4g.Error("The time is now: %s", time.Now().Format("15:04:05 MST 2006/01/02"))
 
-	time.Sleep(1 * time.Second)
+		time.Sleep(1 * time.Second)
 
-	l4g.Info("The time is now: %s", time.Now().Format("15:04:05 MST 2006/01/02"))
+		l4g.Info("The time is now: %s", time.Now().Format("15:04:05 MST 2006/01/02"))
+		l4g.Info("About that time, eh chaps?")
+		l4g.Info("The time is now: %s", time.Now().Format("15:04:05 MST 2006/01/02"))
+
+		l4g.Info("About that time, eh chaps?")
+		l4g.Info("The time is now: %s", time.Now().Format("15:04:05 MST 2006/01/02"))
+
+		l4g.Info("About that time, eh chaps?")
+		l4g.Info("The time is now: %s", time.Now().Format("15:04:05 MST 2006/01/02"))
+
+		l4g.Info("About that time, eh chaps?")
+		l4g.Info("The time is now: %s", time.Now().Format("15:04:05 MST 2006/01/02"))
+
+		l4g.Info("About that time, eh chaps?")
+		l4g.Info("The time is now: %s", time.Now().Format("15:04:05 MST 2006/01/02"))
+
+		l4g.Info("About that time, eh chaps?")
+		l4g.Info("The time is now: %s", time.Now().Format("15:04:05 MST 2006/01/02"))
+
+		l4g.Info("About that time, eh chaps?")
+		l4g.Info("The time is now: %s", time.Now().Format("15:04:05 MST 2006/01/02"))
+
+	}
+
 }
