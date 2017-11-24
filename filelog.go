@@ -3,8 +3,9 @@
 package log4go
 
 import (
-	"os"
 	"fmt"
+	"github.com/bsed/log4go/support"
+	"os"
 	"time"
 )
 
@@ -28,15 +29,17 @@ type FileLogWriter struct {
 	maxlines_curlines int
 
 	// Rotate at size
-	maxsize         int
-	maxsize_cursize int
+	maxsize         int64
+	maxsize_cursize int64
 
 	// Rotate daily
-	daily          bool
-	daily_opendate int
+	daily bool
+	// daily_opendate int
+	daily_opendaystr string
 
 	// Keep old logfiles (.001, .002, etc)
-	rotate bool
+	rotate    bool
+	maxbackup int
 }
 
 // This is the FileLogWriter's output method
@@ -46,6 +49,7 @@ func (w *FileLogWriter) LogWrite(rec *LogRecord) {
 
 func (w *FileLogWriter) Close() {
 	close(w.rec)
+	w.file.Sync()
 }
 
 // NewFileLogWriter creates a new LogWriter which writes to the given file and
@@ -57,13 +61,26 @@ func (w *FileLogWriter) Close() {
 //
 // The standard log-line format is:
 //   [%D %T] [%L] (%S) %M
-func NewFileLogWriter(fname string, rotate bool) *FileLogWriter {
+func NewFileLogWriter(fname string, rotate, daily bool) *FileLogWriter {
 	w := &FileLogWriter{
-		rec:      make(chan *LogRecord, LogBufferLength),
-		rot:      make(chan bool),
-		filename: fname,
-		format:   "[%D %T] [%L] (%S) %M",
-		rotate:   rotate,
+		rec:       make(chan *LogRecord, LogBufferLength),
+		rot:       make(chan bool),
+		filename:  fname,
+		format:    "[%D %T] [%L] (%S) %M",
+		rotate:    rotate,
+		daily:     daily,
+		maxbackup: 999,
+	}
+
+	if _, err := os.Lstat(w.filename); err == nil {
+		_, ctime, _, err := support.GetStatTime(w.filename)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "FileLogWriter(%q): %s\n", w.filename, err)
+			return nil
+		}
+		w.daily_opendaystr = ctime.Format("2006-01-02")
+		w.maxlines_curlines = support.GetLines(w.filename)
+		w.maxsize_cursize = support.GetSize(w.filename)
 	}
 
 	// open the file for the first time
@@ -92,9 +109,9 @@ func NewFileLogWriter(fname string, rotate bool) *FileLogWriter {
 					return
 				}
 				now := time.Now()
-				if (w.maxlines > 0 && w.maxlines_curlines >= w.maxlines) ||
-					(w.maxsize > 0 && w.maxsize_cursize >= w.maxsize) ||
-					(w.daily && now.Day() != w.daily_opendate) {
+				if (w.maxlines > 0 && w.maxlines_curlines > w.maxlines) ||
+					(w.maxsize > 0 && w.maxsize_cursize > w.maxsize) ||
+					(w.daily && now.Format("2006-01-02") != w.daily_opendaystr) {
 					if err := w.intRotate(); err != nil {
 						fmt.Fprintf(os.Stderr, "FileLogWriter(%q): %s\n", w.filename, err)
 						return
@@ -110,7 +127,7 @@ func NewFileLogWriter(fname string, rotate bool) *FileLogWriter {
 
 				// Update the counts
 				w.maxlines_curlines++
-				w.maxsize_cursize += n
+				w.maxsize_cursize += int64(n)
 			}
 		}
 	}()
@@ -135,22 +152,49 @@ func (w *FileLogWriter) intRotate() error {
 	if w.rotate {
 		_, err := os.Lstat(w.filename)
 		if err == nil { // file exists
-			// Find the next available number
 			num := 1
 			fname := ""
-			for ; err == nil && num <= 999; num++ {
-				fname = w.filename + fmt.Sprintf(".%03d", num)
-				_, err = os.Lstat(fname)
-			}
-			// return error if the last file checked still existed
-			if err == nil {
-				return fmt.Errorf("Rotate: Cannot find free log number to rename %s\n", w.filename)
+			todayDate := time.Now().Format("2006-01-02")
+			if w.daily && todayDate != w.daily_opendaystr {
+				// another day, rename all old log file
+				for ; err == nil && num <= 999; num++ {
+					fname = w.filename + fmt.Sprintf(".%03d", num)
+					nfname := w.filename + fmt.Sprintf(".%s.%03d", w.daily_opendaystr, num)
+					_, err = os.Lstat(fname)
+					if err == nil {
+						os.Rename(fname, nfname)
+					}
+				}
+				// return error if the last file checked still existed
+				if err == nil {
+					return fmt.Errorf("Rotate: Cannot find free log number to rename %s\n", w.filename)
+				} else {
+					fname = w.filename + fmt.Sprintf(".%s", w.daily_opendaystr)
+				}
+			} else if (w.maxlines > 0 && w.maxlines_curlines > w.maxlines) ||
+				(w.maxsize > 0 && w.maxsize_cursize > w.maxsize) {
+				// maxlines or maxsize reached, create new log and rename the old
+				num = w.maxbackup - 1
+				for ; num >= 1; num-- {
+					fname = w.filename + fmt.Sprintf(".%03d", num)
+					nfname := w.filename + fmt.Sprintf(".%03d", num+1)
+					_, err = os.Lstat(fname)
+					if err == nil {
+						os.Rename(fname, nfname)
+					}
+				}
+			} else {
+				// first time init logger, reuse old log file if exist, here we do nothing
 			}
 
+			if w.file != nil { w.file.Close() }
+
 			// Rename the file to its newfound home
-			err = os.Rename(w.filename, fname)
-			if err != nil {
-				return fmt.Errorf("Rotate: %s\n", err)
+			if fname != "" {
+				err = os.Rename(w.filename, fname)
+				if err != nil {
+					return fmt.Errorf("Rotate: %s\n", err)
+				}
 			}
 		}
 	}
@@ -166,7 +210,8 @@ func (w *FileLogWriter) intRotate() error {
 	fmt.Fprint(w.file, FormatLogRecord(w.header, &LogRecord{Created: now}))
 
 	// Set the daily open date to the current date
-	w.daily_opendate = now.Day()
+	//	w.daily_opendate = now.Day()
+	w.daily_opendaystr = now.Format("2006-01-02")
 
 	// initialize rotation values
 	w.maxlines_curlines = 0
@@ -203,7 +248,7 @@ func (w *FileLogWriter) SetRotateLines(maxlines int) *FileLogWriter {
 
 // Set rotate at size (chainable). Must be called before the first log message
 // is written.
-func (w *FileLogWriter) SetRotateSize(maxsize int) *FileLogWriter {
+func (w *FileLogWriter) SetRotateSize(maxsize int64) *FileLogWriter {
 	//fmt.Fprintf(os.Stderr, "FileLogWriter.SetRotateSize: %v\n", maxsize)
 	w.maxsize = maxsize
 	return w
@@ -214,6 +259,13 @@ func (w *FileLogWriter) SetRotateSize(maxsize int) *FileLogWriter {
 func (w *FileLogWriter) SetRotateDaily(daily bool) *FileLogWriter {
 	//fmt.Fprintf(os.Stderr, "FileLogWriter.SetRotateDaily: %v\n", daily)
 	w.daily = daily
+	return w
+}
+
+// Set max backup files. Must be called before the first log message
+// is written.
+func (w *FileLogWriter) SetRotateMaxBackup(maxbackup int) *FileLogWriter {
+	w.maxbackup = maxbackup
 	return w
 }
 
@@ -229,8 +281,8 @@ func (w *FileLogWriter) SetRotate(rotate bool) *FileLogWriter {
 
 // NewXMLLogWriter is a utility method for creating a FileLogWriter set up to
 // output XML record log messages instead of line-based ones.
-func NewXMLLogWriter(fname string, rotate bool) *FileLogWriter {
-	return NewFileLogWriter(fname, rotate).SetFormat(
+func NewXMLLogWriter(fname string, rotate, daily bool) *FileLogWriter {
+	return NewFileLogWriter(fname, rotate, daily).SetFormat(
 		`	<record level="%L">
 		<timestamp>%D %T</timestamp>
 		<source>%S</source>
