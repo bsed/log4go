@@ -43,32 +43,39 @@
 // - Have GetInfoChannel, GetDebugChannel, etc return a chan string that allows
 //   for another method of logging
 // - Add an XML filter type
+//
+// - New feature: exclude specified source form log filter.
+// - Reuse the exist log file.
+// - More accurate log time
+
 package log4go
 
 import (
 	"errors"
-	"os"
 	"fmt"
-	"time"
-	"strings"
+	. "github.com/kimiazhu/golib/stack"
+	"os"
 	"runtime"
+	"strings"
+	"time"
 )
 
 // Version information
 const (
-	L4G_VERSION = "log4go-v3.0.1"
+	L4G_VERSION = "log4go-v3.1.0"
 	L4G_MAJOR   = 3
-	L4G_MINOR   = 0
-	L4G_BUILD   = 1
+	L4G_MINOR   = 1
+	L4G_BUILD   = 0
 )
 
 /****** Constants ******/
 
 // These are the integer logging levels used by the logger
-type level int
+type Level int
 
 const (
-	FINEST level = iota
+	ACCESS Level = iota
+	FINEST
 	FINE
 	DEBUG
 	TRACE
@@ -76,14 +83,15 @@ const (
 	WARNING
 	ERROR
 	CRITICAL
+	FATAL
 )
 
 // Logging level strings
 var (
-	levelStrings = [...]string{"FNST", "FINE", "DEBG", "TRAC", "INFO", "WARN", "EROR", "CRIT"}
+	levelStrings = [...]string{"ACCE", "FNST", "FINE", "DEBG", "TRAC", "INFO", "WARN", "EROR", "CRIT"}
 )
 
-func (l level) String() string {
+func (l Level) String() string {
 	if l < 0 || int(l) > len(levelStrings) {
 		return "UNKNOWN"
 	}
@@ -101,7 +109,7 @@ var (
 
 // A LogRecord contains all of the pertinent information for each message
 type LogRecord struct {
-	Level   level     // The log level
+	Level   Level     // The log level
 	Created time.Time // The time at which the log message was created (nanoseconds)
 	Source  string    // The message source
 	Message string    // The log message
@@ -124,8 +132,9 @@ type LogWriter interface {
 // A Filter represents the log level below which no log records are written to
 // the associated LogWriter.
 type Filter struct {
-	Level level
+	Level Level
 	LogWriter
+	Excludes []string
 }
 
 // A Logger represents a collection of Filters through which log messages are
@@ -144,18 +153,18 @@ func NewLogger() Logger {
 // or above lvl to standard output.
 //
 // DEPRECATED: use NewDefaultLogger instead.
-func NewConsoleLogger(lvl level) Logger {
+func NewConsoleLogger(lvl Level) Logger {
 	os.Stderr.WriteString("warning: use of deprecated NewConsoleLogger\n")
 	return Logger{
-		"stdout": &Filter{lvl, NewConsoleLogWriter()},
+		"stdout": &Filter{lvl, NewConsoleLogWriter(), nil},
 	}
 }
 
 // Create a new logger with a "stdout" filter configured to send log messages at
 // or above lvl to standard output.
-func NewDefaultLogger(lvl level) Logger {
+func NewDefaultLogger(lvl Level) Logger {
 	return Logger{
-		"stdout": &Filter{lvl, NewConsoleLogWriter()},
+		"stdout": &Filter{lvl, NewConsoleLogWriter(), nil},
 	}
 }
 
@@ -174,19 +183,19 @@ func (log Logger) Close() {
 // Add a new LogWriter to the Logger which will only log messages at lvl or
 // higher.  This function should not be called from multiple goroutines.
 // Returns the logger for chaining.
-func (log Logger) AddFilter(name string, lvl level, writer LogWriter) Logger {
-	log[name] = &Filter{lvl, writer}
+func (log Logger) AddFilter(name string, lvl Level, writer LogWriter) Logger {
+	log[name] = &Filter{lvl, writer, nil}
 	return log
 }
 
 /******* Logging *******/
 // Send a formatted log message internally
-func (log Logger) intLogf(lvl level, format string, args ...interface{}) {
+func (log Logger) intLogf(lvl Level, format string, args ...interface{}) {
 	skip := true
 
 	// Determine if any logging will be done
 	for _, filt := range log {
-		if lvl >= filt.Level {
+		if lvl == ACCESS || lvl >= filt.Level {
 			skip = false
 			break
 		}
@@ -216,21 +225,22 @@ func (log Logger) intLogf(lvl level, format string, args ...interface{}) {
 	}
 
 	// Dispatch the logs
-	for _, filt := range log {
-		if lvl < filt.Level {
-			continue
+	for tag, filt := range log {
+		if lvl == ACCESS && tag == "access" && !(filt.excluded(src)) {
+			filt.LogWrite(rec)
+		} else if tag != "access" && lvl >= filt.Level && (!filt.excluded(src)) {
+			filt.LogWrite(rec)
 		}
-		filt.LogWrite(rec)
 	}
 }
 
 // Send a closure log message internally
-func (log Logger) intLogc(lvl level, closure func() string) {
+func (log Logger) intLogc(lvl Level, closure func() string) {
 	skip := true
 
 	// Determine if any logging will be done
 	for _, filt := range log {
-		if lvl >= filt.Level {
+		if lvl == ACCESS || lvl >= filt.Level {
 			skip = false
 			break
 		}
@@ -255,21 +265,22 @@ func (log Logger) intLogc(lvl level, closure func() string) {
 	}
 
 	// Dispatch the logs
-	for _, filt := range log {
-		if lvl < filt.Level {
-			continue
+	for tag, filt := range log {
+		if lvl == ACCESS && tag == "access" && !(filt.excluded(src)) {
+			filt.LogWrite(rec)
+		} else if tag != "access" && lvl >= filt.Level && (!filt.excluded(src)) {
+			filt.LogWrite(rec)
 		}
-		filt.LogWrite(rec)
 	}
 }
 
 // Send a log message with manual level, source, and message.
-func (log Logger) Log(lvl level, source, message string) {
+func (log Logger) Log(lvl Level, source, message string) {
 	skip := true
 
 	// Determine if any logging will be done
 	for _, filt := range log {
-		if lvl >= filt.Level {
+		if lvl == ACCESS || lvl >= filt.Level {
 			skip = false
 			break
 		}
@@ -287,23 +298,24 @@ func (log Logger) Log(lvl level, source, message string) {
 	}
 
 	// Dispatch the logs
-	for _, filt := range log {
-		if lvl < filt.Level {
-			continue
+	for tag, filt := range log {
+		if lvl == ACCESS && tag == "access" && !(filt.excluded(source)) {
+			filt.LogWrite(rec)
+		} else if tag != "access" && lvl >= filt.Level && (!filt.excluded(source)) {
+			filt.LogWrite(rec)
 		}
-		filt.LogWrite(rec)
 	}
 }
 
 // Logf logs a formatted log message at the given log level, using the caller as
 // its source.
-func (log Logger) Logf(lvl level, format string, args ...interface{}) {
+func (log Logger) Logf(lvl Level, format string, args ...interface{}) {
 	log.intLogf(lvl, format, args...)
 }
 
 // Logc logs a string returned by the closure at the given log level, using the caller as
 // its source.  If no log message would be written, the closure is never called.
-func (log Logger) Logc(lvl level, closure func() string) {
+func (log Logger) Logc(lvl Level, closure func() string) {
 	log.intLogc(lvl, closure)
 }
 
@@ -412,6 +424,26 @@ func (log Logger) Info(arg0 interface{}, args ...interface{}) {
 	}
 }
 
+// Info logs a message at the Access log level.
+// See Debug for an explanation of the arguments.
+// The tag of access log MUST be <tag>access</tag>
+func (log Logger) Access(arg0 interface{}, args ...interface{}) {
+	const (
+		lvl = ACCESS
+	)
+	switch first := arg0.(type) {
+	case string:
+		// Use the string as a format string
+		log.intLogf(lvl, first, args...)
+	case func() string:
+		// Log the closure (no other arguments used)
+		log.intLogc(lvl, first)
+	default:
+		// Build a format string so that it will be similar to Sprint
+		log.intLogf(lvl, fmt.Sprint(arg0)+strings.Repeat(" %v", len(args)), args...)
+	}
+}
+
 // Warn logs a message at the warning log level and returns the formatted error.
 // At the warning level and higher, there is no performance benefit if the
 // message is not actually logged, because all formats are processed and all
@@ -462,7 +494,7 @@ func (log Logger) Error(arg0 interface{}, args ...interface{}) error {
 
 // Critical logs a message at the critical log level and returns the formatted error,
 // See Warn for an explanation of the performance and Debug for an explanation
-// of the parameters.
+// of the parameters. This method will log the error stacks
 func (log Logger) Critical(arg0 interface{}, args ...interface{}) error {
 	const (
 		lvl = CRITICAL
@@ -471,14 +503,26 @@ func (log Logger) Critical(arg0 interface{}, args ...interface{}) error {
 	switch first := arg0.(type) {
 	case string:
 		// Use the string as a format string
-		msg = fmt.Sprintf(first, args...)
+		msg = fmt.Sprintf(first+"\n%s", args, CallStack(3))
 	case func() string:
 		// Log the closure (no other arguments used)
-		msg = first()
+		//msg = first()
+		msg = fmt.Sprintf("%s\n%s", first(), CallStack(3))
 	default:
 		// Build a format string so that it will be similar to Sprint
-		msg = fmt.Sprintf(fmt.Sprint(first)+strings.Repeat(" %v", len(args)), args...)
+		msg = fmt.Sprintf("%s\n%s",fmt.Sprintf(fmt.Sprint(first)+strings.Repeat(" %v", len(args))+"\n%s", args...),CallStack(3))
 	}
 	log.intLogf(lvl, msg)
 	return errors.New(msg)
+}
+
+func (f *Filter) excluded(src string) bool {
+	if f.Excludes != nil {
+		for _, ex := range f.Excludes {
+			if strings.HasPrefix(src, ex) {
+				return true
+			}
+		}
+	}
+	return false
 }
