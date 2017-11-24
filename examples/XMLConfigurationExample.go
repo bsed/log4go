@@ -5,10 +5,11 @@ import (
 	"time"
 )
 
+var log l4g.Logger
 func main() {
-	log := make(l4g.Logger)
+	log = l4g.NewDefaultLogger(l4g.INFO)
 	// Load the configuration (isn't this easy?)
-	log.LoadConfiguration("example.xml")
+	//log.LoadConfiguration("./example.xml")
 
 	// And now we're ready!
 	log.Finest("This will only go to those of you really cool UDP kids!  If you change enabled=true.")
