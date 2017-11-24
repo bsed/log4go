@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	l4g "github.com/bsed/log4go"
 )
 
 var (
@@ -22,7 +23,7 @@ func main() {
 	flag.Parse()
 
 	// Bind to the port
-	bind, err := net.ResolveUDPAddr("0.0.0.0:" + *port)
+	bind, err := net.ResolveUDPAddr("udp4","0.0.0.0:" + *port)
 	e(err)
 
 	// Create listener
@@ -30,7 +31,11 @@ func main() {
 	e(err)
 
 	fmt.Printf("Listening to port %s...\n", *port)
+
 	for {
+		l4g.Finest("This will only go to those of you really cool UDP kids!  If you change enabled=true.")
+		l4g.Debug("Oh no!  %d + %d = %d!", 2, 2, 2+2)
+		l4g.Info("About that time, eh chaps?")
 		// read into a new buffer
 		buffer := make([]byte, 1024)
 		_, _, err := listener.ReadFrom(buffer)
