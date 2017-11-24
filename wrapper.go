@@ -5,7 +5,6 @@ package log4go
 import (
 	"errors"
 	"fmt"
-	. "github.com/kimiazhu/golib/stack"
 	"os"
 	"os/exec"
 	"path/filepath"
