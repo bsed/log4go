@@ -7,6 +7,7 @@ import (
 	"github.com/bsed/log4go/support"
 	"os"
 	"time"
+	"sync"
 )
 
 // This log writer sends output to a file
@@ -15,6 +16,7 @@ type FileLogWriter struct {
 	rot chan bool
 
 	// The opened file
+	fileprefix string
 	filename string
 	file     *os.File
 
@@ -47,9 +49,16 @@ func (w *FileLogWriter) LogWrite(rec *LogRecord) {
 	w.rec <- rec
 }
 
+
+var lock = new(sync.Mutex)
+var cond = sync.NewCond(lock)
+
 func (w *FileLogWriter) Close() {
+	lock.Lock()
 	close(w.rec)
 	w.file.Sync()
+	cond.Wait()
+	lock.Unlock()
 }
 
 // NewFileLogWriter creates a new LogWriter which writes to the given file and
@@ -71,6 +80,8 @@ func NewFileLogWriter(fname string, rotate, daily bool) *FileLogWriter {
 		daily:     daily,
 		maxbackup: 999,
 	}
+
+	w.filename = w.genFileName()
 
 	if _, err := os.Lstat(w.filename); err == nil {
 		_, ctime, _, err := support.GetStatTime(w.filename)
@@ -106,6 +117,9 @@ func NewFileLogWriter(fname string, rotate, daily bool) *FileLogWriter {
 				}
 			case rec, ok := <-w.rec:
 				if !ok {
+					// signal notification wakeup
+					cond.Signal()
+
 					return
 				}
 				now := time.Now()
@@ -147,6 +161,8 @@ func (w *FileLogWriter) intRotate() error {
 		fmt.Fprint(w.file, FormatLogRecord(w.trailer, &LogRecord{Created: time.Now()}))
 		w.file.Close()
 	}
+
+	now := time.Now()
 
 	// If we are keeping log files, move it to the next available number
 	if w.rotate {
@@ -197,6 +213,9 @@ func (w *FileLogWriter) intRotate() error {
 				}
 			}
 		}
+	}else if (w.daily) {
+		// for daily log output
+		w.filename = w.genFileName()
 	}
 
 	// Open the log file
@@ -206,7 +225,6 @@ func (w *FileLogWriter) intRotate() error {
 	}
 	w.file = fd
 
-	now := time.Now()
 	fmt.Fprint(w.file, FormatLogRecord(w.header, &LogRecord{Created: now}))
 
 	// Set the daily open date to the current date
@@ -277,6 +295,17 @@ func (w *FileLogWriter) SetRotate(rotate bool) *FileLogWriter {
 	//fmt.Fprintf(os.Stderr, "FileLogWriter.SetRotate: %v\n", rotate)
 	w.rotate = rotate
 	return w
+}
+
+
+func (w *FileLogWriter) SetFilePrefix(prefix string) *FileLogWriter {
+	w.fileprefix =prefix
+	return w
+}
+
+func (w *FileLogWriter) genFileName() string {
+	now := time.Now()
+	return fmt.Sprintf("%s%d%02d%02d.log", w.fileprefix, now.Year(), now.Month(), now.Day())
 }
 
 // NewXMLLogWriter is a utility method for creating a FileLogWriter set up to

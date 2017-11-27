@@ -14,7 +14,11 @@ type SocketLogWriter chan *LogRecord
 
 // This is the SocketLogWriter's output method
 func (w SocketLogWriter) LogWrite(rec *LogRecord) {
-	w <- rec
+	//w <- rec
+	select {
+		case w <- rec:
+	default:
+	}
 }
 
 func (w SocketLogWriter) Close() {
