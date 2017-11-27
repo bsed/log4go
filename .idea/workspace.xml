@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b2619d5c-2abc-4ae1-ad66-f458dc9151ab" name="Default" comment="" />
+    <list default="true" id="b2619d5c-2abc-4ae1-ad66-f458dc9151ab" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -11,11 +13,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="log4go.go" pinned="false" current-in-tab="false">
+      <file leaf-file-name="log4go.go" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/log4go.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="715">
-              <caret line="183" column="32" lean-forward="false" selection-start-line="183" selection-start-column="29" selection-end-line="183" selection-end-column="32" />
+            <state relative-caret-position="-1590">
+              <caret line="135" column="12" lean-forward="false" selection-start-line="135" selection-start-column="4" selection-end-line="135" selection-end-column="12" />
               <folding>
                 <element signature="e#2461#2524#0" expanded="true" />
               </folding>
@@ -23,23 +25,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="XMLConfigurationExample.go" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/examples/XMLConfigurationExample.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="166">
-              <caret line="21" column="34" lean-forward="false" selection-start-line="21" selection-start-column="4" selection-end-line="21" selection-end-column="34" />
-              <folding>
-                <element signature="e#14#120#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="example.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/examples/example.xml">
+        <entry file="file://$PROJECT_DIR$/example.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
-              <caret line="5" column="17" lean-forward="false" selection-start-line="5" selection-start-column="17" selection-end-line="5" selection-end-column="17" />
+            <state relative-caret-position="-494">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -62,6 +52,21 @@
       <find>warning: use of deprecated NewLogger</find>
       <find>NewDefaultLogger</find>
       <find>init</find>
+      <find>NewConsoleLogWriter</find>
+      <find>ConfigLogWriter</find>
+      <find>intRotate</find>
+      <find>rotate</find>
+      <find>rotate(</find>
+      <find>skip</find>
+      <find>LogWrite</find>
+      <find>fun LogWrite</find>
+      <find>intLogf</find>
+      <find>LogRecord</find>
+      <find>Unlock</find>
+      <find>exten</find>
+      <find>flush</find>
+      <find>unlo</find>
+      <find>Excludes</find>
     </findStrings>
   </component>
   <component name="GOROOT" path="D:\Go" />
@@ -95,11 +100,11 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="230" />
-    <option name="y" value="145" />
+  <component name="ProjectFrameBounds" extendedState="1">
+    <option name="x" value="813" />
+    <option name="y" value="213" />
     <option name="width" value="1663" />
-    <option name="height" value="719" />
+    <option name="height" value="689" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -117,7 +122,6 @@
     </navigator>
     <panes>
       <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -139,6 +143,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -167,14 +172,14 @@
     <option name="remove_strategy" value="false" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="230" y="145" width="1663" height="719" extended-state="0" />
+    <frame x="813" y="213" width="1663" height="689" extended-state="1" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23740134" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18943533" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.0" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.0" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -204,6 +209,52 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/log4go.go">
       <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2640">
+          <caret line="183" column="32" lean-forward="false" selection-start-line="183" selection-start-column="29" selection-end-line="183" selection-end-column="32" />
+          <folding>
+            <element signature="e#2461#2524#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/wrapper.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3255">
+          <caret line="224" column="29" lean-forward="true" selection-start-line="223" selection-start-column="4" selection-end-line="224" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log4go.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2640">
+          <caret line="183" column="32" lean-forward="false" selection-start-line="183" selection-start-column="29" selection-end-line="183" selection-end-column="32" />
+          <folding>
+            <element signature="e#2461#2524#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/example.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="17" lean-forward="false" selection-start-line="5" selection-start-column="17" selection-end-line="5" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/XMLConfigurationExample.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="21" column="34" lean-forward="false" selection-start-line="21" selection-start-column="4" selection-end-line="21" selection-end-column="34" />
+          <folding>
+            <element signature="e#14#120#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log4go.go">
+      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2070">
           <caret line="145" column="14" lean-forward="false" selection-start-line="145" selection-start-column="5" selection-end-line="145" selection-end-column="14" />
           <folding>
@@ -216,7 +267,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -224,9 +274,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="360">
           <caret line="31" column="34" lean-forward="true" selection-start-line="31" selection-start-column="34" selection-end-line="31" selection-end-column="34" />
-          <folding>
-            <element signature="e#14#90#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -234,9 +281,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
           <caret line="13" column="28" lean-forward="true" selection-start-line="13" selection-start-column="28" selection-end-line="13" selection-end-column="28" />
-          <folding>
-            <element signature="e#14#69#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -245,19 +289,12 @@
         <state split_layout="SPLIT">
           <first_editor relative-caret-position="0">
             <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-            <folding />
           </first_editor>
           <second_editor />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/examples/flw.log">
-      <provider selected="true" editor-type-id="LogFileEditorProvider">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/flw.log" />
     <entry file="file://$PROJECT_DIR$/config.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -270,7 +307,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
           <caret line="6" column="26" lean-forward="false" selection-start-line="6" selection-start-column="26" selection-end-line="6" selection-end-column="26" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -319,33 +355,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/socklog.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="7" lean-forward="true" selection-start-line="4" selection-start-column="7" selection-end-line="4" selection-end-column="7" />
-          <folding>
-            <element signature="e#97#144#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/stack.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
           <caret line="17" column="9" lean-forward="false" selection-start-line="17" selection-start-column="9" selection-end-line="17" selection-end-column="9" />
-          <folding>
-            <element signature="e#16#62#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/termlog.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="7" lean-forward="true" selection-start-line="4" selection-start-column="7" selection-end-line="4" selection-end-column="7" />
-          <folding>
-            <element signature="e#97#134#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -357,34 +370,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/examples/flw.log">
-      <provider editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="56" lean-forward="true" selection-start-line="9" selection-start-column="56" selection-end-line="9" selection-end-column="56" />
-          <folding />
-        </state>
-      </provider>
-      <provider selected="true" editor-type-id="LogFileEditorProvider">
-        <state relative-caret-position="-16136">
-          <caret line="3" column="0" lean-forward="true" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/flw.log" />
     <entry file="file://$PROJECT_DIR$/examples/FileLogWriter_Manual.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="488">
           <caret line="47" column="5" lean-forward="true" selection-start-line="39" selection-start-column="4" selection-end-line="47" selection-end-column="5" />
-          <folding>
-            <element signature="e#14#90#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/wrapper.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="320">
-          <caret line="40" column="18" lean-forward="false" selection-start-line="40" selection-start-column="18" selection-end-line="40" selection-end-column="18" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -393,7 +383,6 @@
         <state split_layout="SPLIT">
           <first_editor relative-caret-position="375">
             <caret line="25" column="75" lean-forward="false" selection-start-line="25" selection-start-column="75" selection-end-line="25" selection-end-column="75" />
-            <folding />
           </first_editor>
           <second_editor />
         </state>
@@ -401,23 +390,14 @@
       <provider editor-type-id="text-editor">
         <state relative-caret-position="270">
           <caret line="18" column="69" lean-forward="false" selection-start-line="18" selection-start-column="69" selection-end-line="18" selection-end-column="69" />
-          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/examples/SimpleNetLogClient.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="30" lean-forward="false" selection-start-line="9" selection-start-column="30" selection-end-line="9" selection-end-column="30" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/SimpleNetLogClient.go" />
     <entry file="file://$PROJECT_DIR$/examples/SimpleNetLogServer.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="93">
           <caret line="7" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -425,9 +405,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="240">
           <caret line="16" column="6" lean-forward="false" selection-start-line="16" selection-start-column="6" selection-end-line="16" selection-end-column="6" />
-          <folding>
-            <element signature="e#14#69#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -435,58 +412,15 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="345">
           <caret line="23" column="81" lean-forward="true" selection-start-line="17" selection-start-column="4" selection-end-line="23" selection-end-column="81" />
-          <folding>
-            <element signature="e#14#69#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/filelog.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="6" column="26" lean-forward="false" selection-start-line="6" selection-start-column="26" selection-end-line="6" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/log.go" />
+    <entry file="file://$PROJECT_DIR$/examples/log4go.xml" />
     <entry file="file://$PROJECT_DIR$/config.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="474">
-          <caret line="101" column="18" lean-forward="false" selection-start-line="101" selection-start-column="18" selection-end-line="101" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/log4go.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="715">
-          <caret line="183" column="32" lean-forward="false" selection-start-line="183" selection-start-column="29" selection-end-line="183" selection-end-column="32" />
-          <folding>
-            <element signature="e#2461#2524#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/examples/log.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="8" lean-forward="true" selection-start-line="3" selection-start-column="4" selection-end-line="3" selection-end-column="8" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/examples/log4go.xml">
-      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="165">
-          <caret line="11" column="46" lean-forward="false" selection-start-line="11" selection-start-column="36" selection-end-line="11" selection-end-column="46" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/examples/example.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="17" lean-forward="false" selection-start-line="5" selection-start-column="17" selection-end-line="5" selection-end-column="17" />
+          <caret line="33" column="18" lean-forward="false" selection-start-line="33" selection-start-column="18" selection-end-line="33" selection-end-column="18" />
           <folding />
         </state>
       </provider>
@@ -496,7 +430,75 @@
         <state relative-caret-position="166">
           <caret line="21" column="34" lean-forward="false" selection-start-line="21" selection-start-column="4" selection-end-line="21" selection-end-column="34" />
           <folding>
-            <element signature="e#14#120#0" expanded="true" />
+            <element signature="e#14#120#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/wrapper.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="331">
+          <caret line="374" column="37" lean-forward="true" selection-start-line="374" selection-start-column="37" selection-end-line="374" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filelog.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-150">
+          <caret line="138" column="31" lean-forward="false" selection-start-line="138" selection-start-column="24" selection-end-line="138" selection-end-column="31" />
+          <folding>
+            <element signature="e#97#162#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pattlog.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="36" column="4" lean-forward="false" selection-start-line="36" selection-start-column="4" selection-end-line="36" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/socklog.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="151">
+          <caret line="32" column="4" lean-forward="false" selection-start-line="32" selection-start-column="4" selection-end-line="32" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/termlog.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="16" column="15" lean-forward="false" selection-start-line="16" selection-start-column="11" selection-end-line="16" selection-end-column="15" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/example.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="21" lean-forward="false" selection-start-line="5" selection-start-column="21" selection-end-line="5" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/example.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-494">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log4go.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1590">
+          <caret line="135" column="12" lean-forward="false" selection-start-line="135" selection-start-column="4" selection-end-line="135" selection-end-column="12" />
+          <folding>
+            <element signature="e#2461#2524#0" expanded="true" />
           </folding>
         </state>
       </provider>
